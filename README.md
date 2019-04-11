@@ -1,4 +1,5 @@
-# laravel-react-redux-boilerplate
+# Sample Document Storage Application
+## built on fork of laravel-react-redux-boilerplate
 
 <a target="_blank" href="https://opensource.org/licenses/MIT" title="License: MIT">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg">
