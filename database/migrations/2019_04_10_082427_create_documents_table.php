@@ -17,6 +17,8 @@ class CreateDocumentsTable extends Migration
             $table->increments('id');
             $table->string('hash', 32)->unique();
             $table->string('filename');
+            $table->integer('size');
+            $table->string('mime_type')->nullable()->default(null);
             $table->string('path');
             $table->string('thumbnail')->nullable()->default(null);
             $table->timestamps();
