@@ -32,10 +32,16 @@ export default (state = initialState, { type, payload }) => {
         case DELETE_REQUEST:
         case UPLOAD_REQUEST:
         case UPLOAD_REQUEST_COMPLETE:
+            return {
+                ...state,
+                busy: !state.busy,
+            };
+
         case DELETE_REQUEST_COMPLETE:
             return {
                 ...state,
                 busy: !state.busy,
+                files: state.files.filter(file => file.id !== payload),
             };
 
         case FETCH_REQUEST_COMPLETE:
@@ -108,10 +114,10 @@ export const remove = id => (dispatch, getState) => {
     const document = getState().storage.files.find(file => file.id === id);
 
     if (document) {
-        return axios.get(`/api/delete/${document.hash}`).then(response => {
+        return axios.get(`/api/delete/${document.hash}`).then(() => {
             dispatch({
-                type: UPLOAD_REQUEST_COMPLETE,
-                payload: response,
+                type: DELETE_REQUEST_COMPLETE,
+                payload: id,
             });
         });
     }

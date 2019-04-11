@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { fetch, remove } from '../../reducers/storage';
+import { remove } from '../../reducers/storage';
 
 const DocumentListItem = styled.div`
     display: flex;
@@ -57,8 +57,8 @@ class Document extends Component {
         return (
             <DocumentListItem>
                 <div>
-                    {filename.substring(0, 25)}
-                    {filename.length > 25 ? '...' : ''}
+                    {filename.substring(0, 23)}
+                    {filename.length > 23 ? '...' : ''}
                     <DocumentListItemSize>
                         {Document.convertBytes(size)}
                     </DocumentListItemSize>
@@ -72,9 +72,7 @@ class Document extends Component {
                         }}
                     />
                     <DocumentListItemDelete
-                        onClick={() =>
-                            this.props.remove(id).then(this.props.fetch)
-                        }
+                        onClick={() => this.props.remove(id)}
                     >
                         &times;
                     </DocumentListItemDelete>
@@ -86,14 +84,12 @@ class Document extends Component {
 
 Document.propTypes = {
     item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-    fetch: PropTypes.func.isRequired,
     remove: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
-            fetch,
             remove,
         },
         dispatch
