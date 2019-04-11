@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Document extends Model
 {
-    protected $fillable = ['hash', 'filename', 'path', 'thumbnail'];
+    protected $fillable = ['hash', 'filename', 'mime_type', 'size', 'path', 'thumbnail'];
 
     public static function deleteByHash(string $hash): bool
     {
