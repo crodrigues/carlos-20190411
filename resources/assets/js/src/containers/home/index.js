@@ -66,14 +66,10 @@ class Home extends Component {
                                 className="btn btn-primary"
                                 disabled={!this.props.selected}
                                 onClick={() =>
-                                    this.props
-                                        .upload()
-                                        .then(() => {
-                                            document.getElementById(
-                                                'file'
-                                            ).value = '';
-                                        })
-                                        .then(this.props.fetch)
+                                    this.props.upload().then(() => {
+                                        document.getElementById('file').value =
+                                            '';
+                                    })
                                 }
                             >
                                 Upload

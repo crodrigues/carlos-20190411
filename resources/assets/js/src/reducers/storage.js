@@ -31,11 +31,22 @@ export default (state = initialState, { type, payload }) => {
 
         case DELETE_REQUEST:
         case UPLOAD_REQUEST:
-        case UPLOAD_REQUEST_COMPLETE:
             return {
                 ...state,
                 busy: !state.busy,
             };
+
+        case UPLOAD_REQUEST_COMPLETE: {
+            const files = [...state.files];
+
+            files.push(payload);
+
+            return {
+                ...state,
+                busy: !state.busy,
+                files,
+            };
+        }
 
         case DELETE_REQUEST_COMPLETE:
             return {
@@ -98,10 +109,10 @@ export const upload = () => (dispatch, getState) => {
                 'Content-Type': 'multipart/form-data',
             },
         })
-        .then(response => {
+        .then(({ data: payload }) => {
             dispatch({
                 type: UPLOAD_REQUEST_COMPLETE,
-                payload: response,
+                payload,
             });
         });
 };
