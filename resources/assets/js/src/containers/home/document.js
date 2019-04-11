@@ -29,10 +29,29 @@ const DocumentListItemDelete = styled.div`
     cursor: pointer;
 `;
 
+const DocumentListItemSize = styled.span`
+    margin-left: 4px;
+    font-size: 10px;
+    color: gray;
+`;
+
 class Document extends Component {
+    static convertBytes(bytes) {
+        const units = ['b', 'kb', 'mb', 'gb', 'tb'];
+        let unit = 0;
+        let size = bytes;
+
+        while (size > 100) {
+            unit += 1;
+            size /= 1024;
+        }
+
+        return `${size.toFixed(2)}${units[unit]}`;
+    }
+
     render() {
         const {
-            item: { id, hash, filename },
+            item: { id, hash, filename, size },
         } = this.props;
 
         return (
@@ -40,6 +59,9 @@ class Document extends Component {
                 <div>
                     {filename.substring(0, 25)}
                     {filename.length > 25 ? '...' : ''}
+                    <DocumentListItemSize>
+                        {Document.convertBytes(size)}
+                    </DocumentListItemSize>
                 </div>
                 <DocumentListItemActions>
                     <i

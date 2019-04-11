@@ -30,6 +30,8 @@ Route::post('/save', function (Request $request) {
         $document = App\Document::create([
             'hash' => md5($path),
             'filename' => $file->getClientOriginalName(),
+            'size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
             'path' => $path,
         ]);
 
