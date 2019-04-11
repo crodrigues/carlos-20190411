@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,33 @@ use Illuminate\Http\Request;
 |
  */
 
-Route::get('/test', function () {
-    return 'test success';
+Route::get('/list', function () {
+    return response()->json(App\Document::all());
+});
+
+Route::post('/save', function (Request $request) {
+    try {
+        if (!$request->hasFile('document')) {
+            throw new Exception('Missing uploaded document');
+        }
+
+        $file = $request->file('document');
+        $path = $file->store('documents');
+
+        $document = App\Document::create([
+            'hash' => md5($path),
+            'filename' => $file->getClientOriginalName(),
+            'path' => $path,
+        ]);
+
+        return response()->json($document, Response::HTTP_OK);
+    } catch (Exception $e) {
+        return response('', Response::HTTP_BAD_REQUEST);
+    }
+});
+
+Route::get('/delete/{hash}', function (string $hash) {
+    App\Document::deleteByHash($hash);
+
+    return response('', Response::HTTP_OK);
 });

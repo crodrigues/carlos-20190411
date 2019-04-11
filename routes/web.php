@@ -12,3 +12,5 @@
  */
 
 Route::view('/{path?}', 'app');
+
+Route::get('/download/{hash}', 'Controller@download');
