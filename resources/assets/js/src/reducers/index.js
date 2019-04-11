@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
-import counter from './counter';
+
+import storage from './storage';
 
 export default combineReducers({
-    counter,
+    storage,
 });

@@ -6,3 +6,18 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+#root {
+  width: 80%;
+  margin: auto;
+}
+
+i.fa-download {
+  cursor: pointer;
+}
+
+.documents__form-controls__label {
+  > span {
+    margin-right: 10px;
+  }
+}

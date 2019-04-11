@@ -1,107 +1,133 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import {
-    increment,
-    incrementAsync,
-    decrement,
-    decrementAsync,
-} from '../../reducers/counter';
+import Documents from './documents';
+
+import { fetch, upload, selectFiles } from '../../reducers/storage';
+
+const FormControls = styled.div`
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 25px;
+    padding: 9px 9px 6px 9px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+`;
+
+const UploadControls = styled.div`
+    display: flex;
+    align-items: baseline;
+`;
 
 class Home extends Component {
     state = {
-        apiResponse: '',
+        filter: '',
     };
 
-    render() {
-        const { apiResponse } = this.state;
+    constructor(props) {
+        super(props);
 
+        this.onChangeDebounced = window._.debounce(this.onChangeDebounced, 250);
+    }
+
+    componentDidMount() {
+        this.props.fetch();
+    }
+
+    onChangeDebounced({ target }) {
+        this.setState({ filter: target.value });
+    }
+
+    render() {
         return (
             <section>
-                <h1>Home</h1>
-                <p>Count: {this.props.count}</p>
-                <div>
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={this.props.increment}
-                    >
-                        Increment
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-outline-primary"
-                        onClick={this.props.incrementAsync}
-                        disabled={this.props.isIncrementing}
-                    >
-                        Increment Async
-                    </button>
-                </div>
-                <div>
-                    <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={this.props.decrement}
-                    >
-                        Decrement
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-outline-danger"
-                        onClick={this.props.decrementAsync}
-                        disabled={this.props.isDecrementing}
-                    >
-                        Decrement Async
-                    </button>
-                </div>
-                <div>
-                    <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={async () => {
-                            const { data } = await window.axios.get(
-                                '/api/test'
-                            );
-
-                            this.setState({
-                                apiResponse: data,
-                            });
-                        }}
-                    >
-                        Call Laravel server
-                    </button>
-                    {apiResponse && <p>Response: {apiResponse}</p>}
-                </div>
+                <Documents
+                    collection={this.props.files}
+                    filter={this.state.filter}
+                />
+                <FormControls>
+                    <UploadControls>
+                        <div>
+                            <input
+                                type="file"
+                                id="file"
+                                onChange={e =>
+                                    this.props.selectFiles(e.target.files)
+                                }
+                            />
+                        </div>
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                disabled={!this.props.selected}
+                                onClick={() =>
+                                    this.props
+                                        .upload()
+                                        .then(() => {
+                                            document.getElementById(
+                                                'file'
+                                            ).value = '';
+                                        })
+                                        .then(this.props.fetch)
+                                }
+                            >
+                                Upload
+                            </button>
+                        </div>
+                    </UploadControls>
+                    <div>
+                        <label
+                            className="documents__form-controls__label"
+                            htmlFor="filter"
+                        >
+                            <span>Filter:</span>
+                            <input
+                                id="filter"
+                                name="filter"
+                                type="text"
+                                onChange={e => {
+                                    e.persist();
+                                    this.onChangeDebounced(e);
+                                }}
+                            />
+                        </label>
+                    </div>
+                </FormControls>
             </section>
         );
     }
 }
 
-Home.propTypes = {
-    count: PropTypes.number.isRequired,
-    decrement: PropTypes.func.isRequired,
-    decrementAsync: PropTypes.func.isRequired,
-    increment: PropTypes.func.isRequired,
-    incrementAsync: PropTypes.func.isRequired,
-    isDecrementing: PropTypes.bool.isRequired,
-    isIncrementing: PropTypes.bool.isRequired,
+Home.defaultProps = {
+    files: [],
+    selected: null,
 };
 
-const mapStateToProps = ({ counter }) => ({
-    count: counter.count,
-    isIncrementing: counter.isIncrementing,
-    isDecrementing: counter.isDecrementing,
+Home.propTypes = {
+    files: PropTypes.arrayOf(PropTypes.object),
+    selected: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+    fetch: PropTypes.func.isRequired,
+    upload: PropTypes.func.isRequired,
+    selectFiles: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = ({ storage }) => ({
+    busy: storage.busy,
+    selected: storage.selected,
+    files: storage.files,
 });
 
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
-            increment,
-            incrementAsync,
-            decrement,
-            decrementAsync,
+            fetch,
+            upload,
+            selectFiles,
         },
         dispatch
     );
